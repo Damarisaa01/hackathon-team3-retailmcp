@@ -1,0 +1,14 @@
+promo_id,promo_name,promo_type,start_date,end_date,discount_pct,department,category,region_scope,expected_uplift_pct
+PR001,Fall Flavors Launch,Percent Off,2025-10-01,2025-10-31,10,Beverage,,ALL,18
+PR002,Bakery Dozen Deal,Bundle,2025-11-03,2025-11-16,15,Bakery,Bakery,ALL,30
+PR003,Holiday Merch Sale,Percent Off,2025-11-24,2025-11-19,20,Merchandise,,ALL,45
+PR004,New Year Breakfast Combo,Bundle,2026-01-05,2026-01-25,12,Food,Sandwiches,ALL,25
+PR005,Valentine Sweet Treats,Percent Off,2026-02-09,2026-02-15,15,Bakery,,ALL,30
+PR006,Spring Refresh Iced Drinks,Percent Off,2026-03-23,2026-04-12,10,Beverage,Coffee & Tea,ALL,15
+PR007,Travel Day Grab&Go,Percent Off,2026-05-18,2026-05-25,10,Grab & Go,,ALL,20
+PR008,Donut Day Special,Percent Off,2026-06-05,2026-06-05,25,Bakery,Bakery,ALL,60
+PR009,Summer Iced Coffee Week,Percent Off,2026-07-06,2026-07-19,15,Beverage,Coffee & Tea,ALL,25
+PR010,Back To Routine Sandwiches,Percent Off,2026-08-24,2026-09-13,10,Food,Sandwiches,ALL,15
+PR011,Coffee Day Offer,Percent Off,2026-09-28,2026-09-30,20,Beverage,Coffee & Tea,ALL,30
+PR012,Northeast Winter Warmup,Percent Off,2026-01-12,2026-02-08,10,Beverage,Coffee & Tea,Northeast,12
+PR013,Mystery Promo,Percent Off,2026-04-01,2026-04-30,15,Bakery,,ALL,20

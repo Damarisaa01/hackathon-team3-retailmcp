@@ -1,0 +1,21 @@
+site_id,site_name,site_type,region,traffic_tier
+ST01,Harborview International Airport,Airport,Northeast,1.6
+ST02,Summit Valley Airport,Airport,Mountain,1.4
+ST03,Desert Gate Airport,Airport,Southwest,1.5
+ST04,Union Central Rail Station,Rail Station,Northeast,1.3
+ST05,Lakeside Field Airport,Airport,Midwest,1.2
+ST06,Millbrook Regional Airport,Airport,Midwest,0.6
+ST07,Cascade Bay Airport,Airport,Northwest,0.9
+ST08,Metro Bus Terminal,Bus Terminal,Northeast,1.1
+ST09,Pinecrest Regional Airport,Airport,Southeast,0.8
+ST10,Southport Airport,Airport,Southeast,0.8
+ST11,Eastgate International Airport,Airport,Northeast,1.7
+ST12,Bayfront Municipal Airport,Airport,Southeast,0.5
+ST13,Prairie Winds Airport,Airport,South Central,1.2
+ST14,Island Coast Airport,Airport,Pacific,1.0
+ST15,Midtown Transit Hub,Rail Station,Northeast,1.4
+ST16,Casino Resort Plaza,Resort,Southwest,1.1
+ST17,Steel City Airport,Airport,Northeast,0.7
+ST18,Gulf Beach Airport,Airport,Southeast,0.6
+ST19,Boardwalk Regional Airport,Airport,Northeast,0.5
+ST20,Gateway Metro Airport,Airport,Northeast,1.8

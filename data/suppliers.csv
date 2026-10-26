@@ -1,0 +1,9 @@
+supplier_id,supplier_name,category_focus,standard_lead_time_days,contract_fill_rate,contract_on_time_rate,min_order_value,delivery_days
+SUP01,Northfield Bakery Partners,Bakery,1,0.95,0.93,150,Daily
+SUP02,Coastal Beverage Distribution,Packaged Beverage,3,0.97,0.95,400,Mon/Thu
+SUP03,Summit Frozen Foods,Food,2,0.92,0.9,300,Tue/Fri
+SUP04,Riverbend Fresh & Dairy,Grab & Go,1,0.94,0.92,200,Daily
+SUP05,Pioneer Merch & Packaging,Merchandise,7,0.88,0.85,500,Weekly
+SUP06,Evergreen Coffee Roasters,Coffee & Tea,4,0.96,0.94,350,Mon/Thu
+SUP07,Harbor Catering Supplies,Catering,2,0.93,0.9,250,Tue/Fri
+SUP08,Metro Wholesale Foods,General,3,0.9,0.88,300,Wed

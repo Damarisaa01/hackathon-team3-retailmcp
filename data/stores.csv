@@ -1,0 +1,41 @@
+store_id,site_id,store_name,format,operator_type,opening_time,closing_time,opened_date,closed_date,sqft,seats
+S001,ST01,food court – full counter 1,Full Counter,Concession Retail,03:00,21:00,2024-04-21,,339,19
+S002,ST01,Arrivals Hall – Shop-in-Shop 2,Shop-in-Shop,Concession Retail,00:00,00:00,2020-11-08,,76,0
+S003,ST01,Terminal C – Full Counter 3  ,Full Counter,Concession Retail,05:00,21:00,2023-04-02,,358,35
+S004,ST01,Departures Lobby – Shop-in-Shop 4,Shop-in-Shop,Concession Retail,00:00,00:00,2024-08-02,,120,0
+S005,ST02,Main Concourse – Shop-in-Shop 1,Shop-in-Shop,Concession Retail,04:00,23:00,2026-04-29,,72,0
+S006,ST02,Terminal C – Express Kiosk 2,Express Kiosk,Concession Retail,06:00,20:00,2019-06-18,,133,0
+S007,ST02,Food Court – Express Kiosk 3,Express Kiosk,Owned F&B,04:00,22:00,2022-10-08,,85,0
+S008,ST02,Food Court – Shop-in-Shop 4,Shop-in-Shop,Concession Retail,00:00,00:00,2019-12-12,,112,0
+S009,ST03,Departures Lobby – Full Counter 1,Full Counter,Concession Retail,04:00,23:00,2019-12-06,,343,21
+S010,ST03,Terminal C – Shop-in-Shop 2,Shop-in-Shop,Concession Retail,00:00,00:00,2021-03-29,2026-07-13,99,0
+S011,ST03,Departures Lobby – Express Kiosk 3,Express Kiosk,Owned F&B,,21:00,2022-02-23,,140,0
+S012,ST04,food court – full counter 1,Full Counter,Owned F&B,,23:00,2020-03-14,,262,35
+S013,ST04,Gate Area West – Shop-in-Shop 2,Shop-in-Shop,Concession Retail,,22:00,2025-01-28,,81,0
+S014,ST04,Terminal B – Full Counter 3  ,Full Counter,Concession Retail,03:00,21:00,2021-03-26,,402,10
+S015,ST05,Food Court – Full Counter 1,Full Counter,Concession Retail,06:00,20:00,2026-07-18,,432,25
+S016,ST05,Gate Area West – Express Kiosk 2,Express Kiosk,Owned F&B,05:00,21:00,2022-07-29,,151,0
+S017,ST05,Terminal A – Full Counter 3,Full Counter,Owned F&B,00:00,00:00,2022-05-23,2026-08-21,338,16
+S018,ST06,Gate Area East – Express Kiosk 1,Express Kiosk,Owned F&B,05:00,22:00,2023-10-23,,140,0
+S019,ST06,Ticketing Level – Shop-in-Shop 2,Shop-in-Shop,Concession Retail,04:00,23:00,2024-01-17,,114,0
+S020,ST07,Mezzanine – Express Kiosk 1,Express Kiosk,Owned F&B,00:00,00:00,2020-03-09,,109,0
+S021,ST07,Departures Lobby – Shop-in-Shop 2,Shop-in-Shop,Concession Retail,04:00,23:00,2019-09-16,,105,0
+S022,ST08,Terminal A – Shop-in-Shop 1,Shop-in-Shop,Concession Retail,05:00,21:00,2021-12-26,,63,0
+S023,ST08,Gate Area East – Full Counter 2,Full Counter,Owned F&B,05:00,22:00,2025-11-10,,304,11
+S024,ST09,Post-Security – Full Counter 1,Full Counter,Concession Retail,04:00,22:00,2026-03-10,,314,10
+S025,ST09,PRE-SECURITY – EXPRESS KIOSK 2,Express Kiosk,Concession Retail,04:00,22:00,2026-01-04,,112,0
+S026,ST10,Departures Lobby – Express Kiosk 1,Express Kiosk,Concession Retail,05:00,22:00,2021-11-03,,164,0
+S027,ST10,Post-Security – Shop-in-Shop 2,Shop-in-Shop,Concession Retail,04:00,22:00,2020-04-29,,104,0
+S028,ST11,Food Court – Full Counter 1  ,Full Counter,Concession Retail,03:00,21:00,2019-04-10,,332,33
+S029,ST11,Gate Area East – Full Counter 2  ,Full Counter,Owned F&B,05:00,22:00,2022-09-20,,231,20
+S030,ST12,Gate Area West – Shop-in-Shop 1,Shop-in-Shop,Concession Retail,04:00,22:00,2022-09-13,,109,0
+S031,ST13,Terminal B – Express Kiosk 1,Express Kiosk,Concession Retail,06:00,20:00,2021-05-25,,138,0
+S032,ST14,Gate Area East – Express Kiosk 1,Express Kiosk,Owned F&B,05:00,21:00,2020-04-15,,90,0
+S033,ST15,Gate Area West – Express Kiosk 1,Express Kiosk,Concession Retail,#N/A,23:00,2024-06-27,,104,0
+S034,ST16,Gate Area East – Full Counter 1,Full Counter,Owned F&B,#N/A,00:00,2024-11-05,,368,26
+S035,ST17,Main Concourse – Express Kiosk 1  ,Express Kiosk,Owned F&B,04:00,23:00,2022-07-27,,142,0
+S036,ST18,Departures Lobby – Express Kiosk 1,Express Kiosk,Concession Retail,05:00,22:00,2023-10-18,,155,0
+S037,ST19,Pre-Security – Full Counter 1,Full Counter,Concession Retail,03:00,21:00,2023-09-17,,233,28
+S038,ST20,Gate Area West – Shop-in-Shop 1,Shop-in-Shop,Concession Retail,00:00,00:00,2021-05-15,,124,0
+S039,ST01,DEPARTURES LOBBY – SHOP-IN-SHOP 4,Shop-in-Shop,Concession Retail,00:00,00:00,2024-08-02,,120,0
+S040,ST99,Unknown Terminal Kiosk,Express Kiosk,Owned F&B,05:00,21:00,2024-01-01,,100,0

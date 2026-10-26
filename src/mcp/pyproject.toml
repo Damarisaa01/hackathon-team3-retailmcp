@@ -1,0 +1,24 @@
+[project]
+name = "glazed-retail-mcp"
+version = "0.1.0"
+description = "MCP server (NVIDIA NeMo Agent Toolkit) exposing the Glazed Co. retail dataset"
+requires-python = ">=3.12"
+dependencies = [
+    "nvidia-nat[mcp]>=1.9.0",
+    "pandas>=2.2",
+    "numpy",
+]
+
+# NAT discovers plugins through this entry-point group.
+[project.entry-points."nat.components"]
+glazed_retail_mcp = "glazed_retail_mcp.register"
+
+# This folder is src/mcp, so it must never be importable as `mcp` (that would shadow the MCP SDK).
+# The importable package is `glazed_retail_mcp`, living directly in this folder.
+[tool.uv.build-backend]
+module-root = ""
+module-name = "glazed_retail_mcp"
+
+[build-system]
+requires = ["uv_build>=0.9,<0.14"]
+build-backend = "uv_build"

@@ -1,0 +1,15 @@
+# MCP *server* config. Start it with (from the repo root):
+#
+#   uv run nat mcp serve --config_file src/mcp/config.yml --host 0.0.0.0 --port 9901
+#
+# MCP endpoint: http://<host>:9901/mcp   (streamable-http)
+# Data is read from <repo>/data, or from $GLAZED_DATA_DIR / `data_dir` below.
+
+function_groups:
+  retail:
+    _type: glazed_retail
+    # data_dir: /path/to/data
+
+# NAT requires a workflow; this one is a built-in utility and is also exposed as a tool.
+workflow:
+  _type: current_datetime

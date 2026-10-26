@@ -1,0 +1,8 @@
+store_id,start_date,end_date,reason
+S006,2025-11-16,2025-12-04,Equipment failure
+S021,2026-05-14,2026-06-13,Terminal works
+S031,2026-01-28,2026-02-27,Renovation
+S036,2026-05-27,2026-06-15,Equipment failure
+S037,2026-02-20,2026-03-14,Renovation
+S010,2026-07-13,2026-07-13,Permanent closure
+S017,2026-08-21,2026-08-21,Permanent closure

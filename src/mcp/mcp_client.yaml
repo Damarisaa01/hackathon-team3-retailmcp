@@ -1,0 +1,18 @@
+function_groups:
+  mcp_tools:
+    _type: mcp_client
+    server:
+      transport: streamable-http
+      url: "http://localhost:9901/mcp"
+    include:
+      - tool_a
+      - tool_b
+    tool_overrides:
+      tool_a:
+        alias: "tool_a_alias"
+        description: "Tool A description"
+
+workflow:
+  _type: react_agent
+  tool_names:
+    - mcp_tools
