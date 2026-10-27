@@ -22,6 +22,28 @@ uv run nat mcp client tool call retail__sales_summary --url http://localhost:990
 Point an agent at it with `mcp_client.yaml` (set the tool names under `include` to the ones below).
 Data location: `<repo>/data`, overridable with `$GLAZED_DATA_DIR` or `data_dir:` in `config.yml`.
 
+## Web demo
+
+The Spanish storefront calls the MCP tools over Streamable HTTP. Start the MCP server in one terminal,
+then run the web app from the repository root in another:
+
+```bash
+uv sync
+uv run nat mcp serve --config_file src/mcp/config.yml --host 127.0.0.1 --port 9901
+```
+
+```bash
+uv run uvicorn glazed_retail_mcp.web:app --host 127.0.0.1 --port 8000
+```
+
+Open `http://127.0.0.1:8000`. Set `$GLAZED_MCP_URL` to use another Streamable HTTP MCP endpoint. The
+current client configuration in `mcp_client.yaml` is a NAT agent template; the web demo calls the
+documented `retail__search_products` and `retail__get_dataset_overview` tools directly.
+
+The cart and downloadable quote are browser-only demonstrations; they do not submit an order. Prices
+shown are catalog base prices, not store-specific live prices. Product photos are illustrative, visual
+search/NV-CLIP and the NVIDIA shopping agent are not connected in this demo.
+
 ## Tools (exposed as `retail__<name>`)
 
 | Tool | Purpose |

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7f1" />
+    <title>Glazed Co. | Catálogo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/app.css" />
+    <script src="/assets/app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="/" aria-label="Glazed Co., inicio">glazed<span>.</span></a>
+      <nav class="top-nav" aria-label="Navegación principal">
+        <a class="active" href="#catalog">Catálogo</a>
+      </nav>
+      <div class="top-actions">
+        <span id="connection-status" class="connection-status" role="status">Conectando MCP</span>
+        <button id="open-cart" class="bag-button" type="button">Bolsa <span id="cart-count">0</span></button>
+      </div>
+    </header>
+
+    <main>
+      <section class="catalog-heading" id="catalog">
+        <div>
+          <p class="eyebrow">GLAZED CO. <span>/</span> CATÁLOGO DE TEMPORADA</p>
+          <h1>Algo bueno<br class="mobile-break" /> para cada antojo.</h1>
+          <p class="intro-copy">Explora la selección y arma tu pedido.</p>
+        </div>
+        <div class="heading-note"><span class="note-dot"></span><span id="catalog-count">Catálogo de muestra</span></div>
+      </section>
+
+      <section class="catalog-tools" aria-label="Buscar y filtrar productos">
+        <label class="search-field">
+          <span class="sr-only">Buscar productos</span>
+          <input id="search-input" type="search" placeholder="Busca café, donuts, sándwiches..." autocomplete="off" />
+        </label>
+        <label class="select-field">
+          <span class="sr-only">Categoría</span>
+          <select id="category-select"><option value="">Todas las categorías</option></select>
+        </label>
+        <label class="select-field sort-field">
+          <span class="sr-only">Ordenar productos</span>
+          <select id="sort-select">
+            <option value="featured">Orden recomendado</option>
+            <option value="price-low">Precio: menor a mayor</option>
+            <option value="price-high">Precio: mayor a menor</option>
+            <option value="name">Nombre: A a Z</option>
+          </select>
+        </label>
+        <button id="assistant-toggle" class="assistant-toggle" type="button">Ayúdame a elegir</button>
+      </section>
+
+      <section class="assistant-panel" id="assistant-panel" hidden aria-label="Asistente de compras">
+        <div class="assistant-heading">
+          <div><p class="eyebrow">ASISTENTE DE COMPRA</p><h2>¿Qué se te antoja?</h2></div>
+          <button id="assistant-close" class="text-button" type="button">Cerrar</button>
+        </div>
+        <form id="assistant-form" class="assistant-form">
+          <label class="sr-only" for="assistant-prompt">Describe lo que buscas</label>
+          <input id="assistant-prompt" type="text" placeholder="Ej. algo dulce para acompañar el café" maxlength="120" />
+          <button class="primary-button" type="submit">Buscar opciones</button>
+        </form>
+        <p id="assistant-response" class="assistant-response">Buscaré coincidencias en el catálogo y te diré por qué aparecen. Recomendaciones basadas en datos; agente NVIDIA aún no conectado.</p>
+      </section>
+
+      <section class="results-bar" aria-live="polite">
+        <div><h2>La selección</h2><span id="result-count" class="result-count"></span></div>
+        <button id="compare-open" class="compare-button" type="button" disabled>Comparar <span id="compare-count">0</span></button>
+      </section>
+
+      <section id="product-grid" class="product-grid" aria-live="polite" aria-busy="true"></section>
+      <div id="empty-state" class="empty-state" hidden>
+        <p class="eyebrow">SIN COINCIDENCIAS</p>
+        <h2>No encontramos ese antojo.</h2>
+        <button id="clear-search" class="text-button" type="button">Limpiar búsqueda</button>
+      </div>
+    </main>
+
+
+    <dialog id="cart-dialog" class="side-dialog" aria-labelledby="cart-title">
+      <div class="dialog-header"><div><p class="eyebrow">TU SELECCIÓN</p><h2 id="cart-title">Bolsa <span id="dialog-cart-count"></span></h2></div><button class="close-button" data-close="cart-dialog" type="button" aria-label="Cerrar">×</button></div>
+      <div id="cart-items" class="cart-items"></div>
+      <div class="cart-bottom"><div class="cart-total"><span>Subtotal estimado</span><strong id="cart-total">$0.00</strong></div><button id="quote-open" class="primary-button full-button" type="button" disabled>Solicitar cotización</button></div>
+    </dialog>
+
+    <dialog id="compare-dialog" class="compare-dialog" aria-labelledby="compare-title">
+      <div class="dialog-header"><div><p class="eyebrow">COMPARACIÓN</p><h2 id="compare-title">Lado a lado</h2></div><button class="close-button" data-close="compare-dialog" type="button" aria-label="Cerrar">×</button></div>
+      <div id="compare-table" class="compare-table"></div>
+    </dialog>
+
+    <dialog id="quote-dialog" class="quote-dialog" aria-labelledby="quote-title">
+      <div class="dialog-header"><div><p class="eyebrow">COTIZACIÓN DE DEMO</p><h2 id="quote-title">Tu resumen</h2></div><button class="close-button" data-close="quote-dialog" type="button" aria-label="Cerrar">×</button></div>
+      <div id="quote-summary" class="quote-summary"></div>
+      <button id="download-quote" class="primary-button full-button" type="button">Descargar resumen</button>
+      <p class="demo-disclaimer">Este archivo es una estimación de demostración, no una cotización comercial.</p>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
