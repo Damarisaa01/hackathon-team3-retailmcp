@@ -4,9 +4,11 @@ version = "0.1.0"
 description = "MCP server (NVIDIA NeMo Agent Toolkit) exposing the Glazed Co. retail dataset"
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi>=0.115",
     "nvidia-nat[mcp]>=1.9.0",
     "pandas>=2.2",
     "numpy",
+    "uvicorn>=0.34",
 ]
 
 # NAT discovers plugins through this entry-point group.
