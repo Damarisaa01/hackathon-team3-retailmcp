@@ -72,9 +72,13 @@ async def storefront() -> FileResponse:
 async def search_products(
     query: str | None = Query(default=None, max_length=120),
     category: str | None = Query(default=None, max_length=80),
-    limit: int = Query(default=30, ge=1, le=100),
+    status: str = Query(default="Active", max_length=30),
+    limit: int = Query(default=60, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
 ) -> Any:
-    arguments: dict[str, Any] = {"limit": limit, "status": "Active"}
+    arguments: dict[str, Any] = {"limit": limit, "offset": offset}
+    if status.lower() != "all":
+        arguments["status"] = status
     if query:
         arguments["query"] = query
     if category:
@@ -92,4 +96,30 @@ async def get_product(sku: str) -> Any:
 @app.get("/api/catalog")
 async def get_catalog_overview() -> Any:
     return await _call_retail_tool("retail__get_dataset_overview", {})
+
+
+@app.get("/api/comparison")
+async def get_sales_comparison(
+    date_from: str | None = Query(default=None, max_length=10),
+    date_to: str | None = Query(default=None, max_length=10),
+    store_id: str | None = Query(default=None, max_length=12),
+    category: str | None = Query(default=None, max_length=80),
+    sku: str | None = Query(default=None, max_length=40),
+    limit: int = Query(default=20, ge=1, le=100),
+    forecast_days: int = Query(default=30, ge=1, le=90),
+    sort_by: str = Query(default="net_sales", pattern="^(net_sales|units_sold)$"),
+) -> Any:
+    arguments: dict[str, Any] = {"limit": limit, "forecast_days": forecast_days, "sort_by": sort_by}
+    if date_from:
+        arguments["date_from"] = date_from
+    if date_to:
+        arguments["date_to"] = date_to
+    if store_id:
+        arguments["store_id"] = store_id
+    if category:
+        arguments["category"] = category
+    if sku:
+        arguments["sku"] = sku
+    return await _call_retail_tool("retail__sales_comparison", arguments)
+
 

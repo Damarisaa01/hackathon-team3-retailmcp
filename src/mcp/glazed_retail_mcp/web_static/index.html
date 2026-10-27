@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f6f7f1" />
-    <title>Glazed Co. | Catálogo</title>
+    <title>Glazed Co. | Catalog</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
@@ -13,90 +13,158 @@
   </head>
   <body>
     <header class="topbar">
-      <a class="wordmark" href="/" aria-label="Glazed Co., inicio">glazed<span>.</span></a>
-      <nav class="top-nav" aria-label="Navegación principal">
-        <a class="active" href="#catalog">Catálogo</a>
+      <a class="wordmark" href="/" aria-label="Glazed Co., home">glazed<span>.</span></a>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a class="active" href="#catalog" data-view="catalog">Catalog</a>
+        <a href="#comparison" data-view="comparison">Global comparison</a>
       </nav>
       <div class="top-actions">
-        <span id="connection-status" class="connection-status" role="status">Conectando MCP</span>
-        <button id="open-cart" class="bag-button" type="button">Bolsa <span id="cart-count">0</span></button>
+        <span id="connection-status" class="connection-status" role="status">Connecting to MCP</span>
+        <button id="open-cart" class="bag-button" type="button">Bag <span id="cart-count">0</span></button>
       </div>
     </header>
 
     <main>
+      <div id="catalog-view">
       <section class="catalog-heading" id="catalog">
         <div>
-          <p class="eyebrow">GLAZED CO. <span>/</span> CATÁLOGO DE TEMPORADA</p>
-          <h1>Algo bueno<br class="mobile-break" /> para cada antojo.</h1>
-          <p class="intro-copy">Explora la selección y arma tu pedido.</p>
+          <p class="eyebrow">GLAZED CO. <span>/</span> SEASONAL CATALOG</p>
+          <h1>Something good<br class="mobile-break" /> for every craving.</h1>
+          <p class="intro-copy">Explore the selection and build your order.</p>
         </div>
-        <div class="heading-note"><span class="note-dot"></span><span id="catalog-count">Catálogo de muestra</span></div>
+        <div class="heading-note"><span class="note-dot"></span><span id="catalog-count">Sample catalog</span></div>
       </section>
 
-      <section class="catalog-tools" aria-label="Buscar y filtrar productos">
+      <section class="catalog-tools" aria-label="Search and filter products">
         <label class="search-field">
-          <span class="sr-only">Buscar productos</span>
-          <input id="search-input" type="search" placeholder="Busca café, donuts, sándwiches..." autocomplete="off" />
+          <span class="sr-only">Search products</span>
+          <input id="search-input" type="search" placeholder="Search coffee, donuts, sandwiches..." autocomplete="off" />
         </label>
         <label class="select-field">
-          <span class="sr-only">Categoría</span>
-          <select id="category-select"><option value="">Todas las categorías</option></select>
+          <span class="sr-only">Category</span>
+          <select id="category-select"><option value="">All categories</option></select>
         </label>
         <label class="select-field sort-field">
-          <span class="sr-only">Ordenar productos</span>
+          <span class="sr-only">Sort products</span>
           <select id="sort-select">
-            <option value="featured">Orden recomendado</option>
-            <option value="price-low">Precio: menor a mayor</option>
-            <option value="price-high">Precio: mayor a menor</option>
-            <option value="name">Nombre: A a Z</option>
+            <option value="featured">Recommended order</option>
+            <option value="price-low">Price: low to high</option>
+            <option value="price-high">Price: high to low</option>
+            <option value="name">Name: A to Z</option>
           </select>
         </label>
-        <button id="assistant-toggle" class="assistant-toggle" type="button">Ayúdame a elegir</button>
+        <button id="assistant-toggle" class="assistant-toggle" type="button">Help me choose</button>
       </section>
 
-      <section class="assistant-panel" id="assistant-panel" hidden aria-label="Asistente de compras">
+      <section class="assistant-panel" id="assistant-panel" hidden aria-label="Shopping assistant">
         <div class="assistant-heading">
-          <div><p class="eyebrow">ASISTENTE DE COMPRA</p><h2>¿Qué se te antoja?</h2></div>
-          <button id="assistant-close" class="text-button" type="button">Cerrar</button>
+          <div><p class="eyebrow">SHOPPING ASSISTANT</p><h2>What are you craving?</h2></div>
+          <button id="assistant-close" class="text-button" type="button">Close</button>
         </div>
         <form id="assistant-form" class="assistant-form">
-          <label class="sr-only" for="assistant-prompt">Describe lo que buscas</label>
-          <input id="assistant-prompt" type="text" placeholder="Ej. algo dulce para acompañar el café" maxlength="120" />
-          <button class="primary-button" type="submit">Buscar opciones</button>
+          <label class="sr-only" for="assistant-prompt">Describe what you are looking for</label>
+          <input id="assistant-prompt" type="text" placeholder="e.g. something sweet to enjoy with coffee" maxlength="120" />
+          <button class="primary-button" type="submit">Find options</button>
         </form>
-        <p id="assistant-response" class="assistant-response">Buscaré coincidencias en el catálogo y te diré por qué aparecen. Recomendaciones basadas en datos; agente NVIDIA aún no conectado.</p>
+        <p id="assistant-response" class="assistant-response">I'll find catalog matches and explain why they appear. Recommendations are data-based; the NVIDIA agent is not connected yet.</p>
       </section>
 
       <section class="results-bar" aria-live="polite">
-        <div><h2>La selección</h2><span id="result-count" class="result-count"></span></div>
-        <button id="compare-open" class="compare-button" type="button" disabled>Comparar <span id="compare-count">0</span></button>
+        <div><h2>Our selection</h2><span id="result-count" class="result-count"></span></div>
+        <button id="compare-open" class="compare-button" type="button" disabled>Compare <span id="compare-count">0</span></button>
       </section>
 
       <section id="product-grid" class="product-grid" aria-live="polite" aria-busy="true"></section>
-      <div id="empty-state" class="empty-state" hidden>
-        <p class="eyebrow">SIN COINCIDENCIAS</p>
-        <h2>No encontramos ese antojo.</h2>
-        <button id="clear-search" class="text-button" type="button">Limpiar búsqueda</button>
+      <div class="catalog-pagination">
+        <button id="load-more" class="primary-button" type="button" hidden>Load more products</button>
       </div>
+      <div id="empty-state" class="empty-state" hidden>
+        <p class="eyebrow">NO MATCHES</p>
+        <h2>We couldn't find that craving.</h2>
+        <button id="clear-search" class="text-button" type="button">Clear search</button>
+      </div>
+      </div>
+
+      <section id="comparison-view" class="comparison-view" hidden aria-labelledby="comparison-title">
+        <div class="comparison-heading">
+          <div>
+            <p class="eyebrow">GLAZED CO. <span>/</span> SALES &amp; HISTORY</p>
+            <h1 id="comparison-title">Global comparison</h1>
+            <p class="intro-copy">Recorded sales, prices, and an indicative projection.</p>
+          </div>
+          <div class="heading-note"><span class="note-dot"></span><span>Source: SQLite</span></div>
+        </div>
+
+        <form id="comparison-filters" class="comparison-tools">
+          <label>From<input id="comparison-from" type="date" /></label>
+          <label>To<input id="comparison-to" type="date" /></label>
+          <label>Category<select id="comparison-category"><option value="">All</option></select></label>
+          <label>Store<input id="comparison-store" type="text" placeholder="All (e.g. S001)" maxlength="12" /></label>
+          <label>Sort by<select id="comparison-sort">
+            <option value="net_sales">Net sales</option>
+            <option value="units_sold">Units sold</option>
+          </select></label>
+          <div class="comparison-product-field">
+            <label for="comparison-product-search">Products (up to 3)</label>
+            <div class="comparison-product-picker">
+              <input id="comparison-product-search" type="search" placeholder="Search by name or SKU" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="comparison-product-options" aria-expanded="false" />
+              <div id="comparison-product-options" class="comparison-product-options" role="listbox" hidden></div>
+            </div>
+            <div id="comparison-selected-products" class="comparison-selected-products" aria-live="polite"></div>
+            <small class="comparison-product-hint">Selecting or removing products updates the KPIs, trend, ranking, and projection for that selection.</small>
+          </div>
+          <button class="primary-button" type="submit">Update</button>
+        </form>
+
+        <p id="comparison-message" class="comparison-message" role="status" hidden></p>
+        <section class="comparison-kpis" aria-label="Period summary">
+          <article class="comparison-kpi"><span>Net sales</span><strong id="comparison-net-sales">—</strong><small id="comparison-sales-change">—</small></article>
+          <article class="comparison-kpi"><span>Units sold</span><strong id="comparison-units">—</strong><small id="comparison-units-change">—</small></article>
+          <article class="comparison-kpi"><span>Average selling price</span><strong id="comparison-average-price">—</strong><small>Net sales / units</small></article>
+          <article class="comparison-kpi projection-kpi"><span>30-day projection</span><strong id="comparison-projection-sales">—</strong><small id="comparison-projection-units">—</small></article>
+        </section>
+
+        <section class="comparison-trend" aria-labelledby="comparison-trend-title">
+          <div class="comparison-section-heading">
+            <div><p class="eyebrow">TREND</p><h2 id="comparison-trend-title">Monthly net sales</h2></div>
+            <span id="comparison-period" class="result-count"></span>
+          </div>
+          <div id="comparison-chart" class="comparison-chart" aria-label="Monthly net sales chart"></div>
+        </section>
+
+        <section class="comparison-ranking" aria-labelledby="comparison-ranking-title">
+          <div class="comparison-section-heading">
+            <div><p class="eyebrow">PRODUCTS</p><h2 id="comparison-ranking-title">Period ranking</h2></div>
+            <span id="comparison-ranking-count" class="result-count"></span>
+          </div>
+          <div class="comparison-table-wrap">
+            <table class="comparison-table">
+              <thead><tr><th>Product</th><th>Units</th><th>Net sales</th><th>Selling price</th><th>Current price</th><th>Projected net sales</th></tr></thead>
+              <tbody id="comparison-rows"></tbody>
+            </table>
+          </div>
+          <p class="comparison-disclaimer">The projection extrapolates the average daily sales from the last 28 days of the selected period. It is an estimate, not actual sales.</p>
+        </section>
+      </section>
     </main>
 
 
     <dialog id="cart-dialog" class="side-dialog" aria-labelledby="cart-title">
-      <div class="dialog-header"><div><p class="eyebrow">TU SELECCIÓN</p><h2 id="cart-title">Bolsa <span id="dialog-cart-count"></span></h2></div><button class="close-button" data-close="cart-dialog" type="button" aria-label="Cerrar">×</button></div>
+      <div class="dialog-header"><div><p class="eyebrow">YOUR SELECTION</p><h2 id="cart-title">Bag <span id="dialog-cart-count"></span></h2></div><button class="close-button" data-close="cart-dialog" type="button" aria-label="Close">×</button></div>
       <div id="cart-items" class="cart-items"></div>
-      <div class="cart-bottom"><div class="cart-total"><span>Subtotal estimado</span><strong id="cart-total">$0.00</strong></div><button id="quote-open" class="primary-button full-button" type="button" disabled>Solicitar cotización</button></div>
+      <div class="cart-bottom"><div class="cart-total"><span>Estimated subtotal</span><strong id="cart-total">$0.00</strong></div><button id="quote-open" class="primary-button full-button" type="button" disabled>Request a quote</button></div>
     </dialog>
 
     <dialog id="compare-dialog" class="compare-dialog" aria-labelledby="compare-title">
-      <div class="dialog-header"><div><p class="eyebrow">COMPARACIÓN</p><h2 id="compare-title">Lado a lado</h2></div><button class="close-button" data-close="compare-dialog" type="button" aria-label="Cerrar">×</button></div>
+      <div class="dialog-header"><div><p class="eyebrow">COMPARISON</p><h2 id="compare-title">Side by side</h2></div><button class="close-button" data-close="compare-dialog" type="button" aria-label="Close">×</button></div>
       <div id="compare-table" class="compare-table"></div>
     </dialog>
 
     <dialog id="quote-dialog" class="quote-dialog" aria-labelledby="quote-title">
-      <div class="dialog-header"><div><p class="eyebrow">COTIZACIÓN DE DEMO</p><h2 id="quote-title">Tu resumen</h2></div><button class="close-button" data-close="quote-dialog" type="button" aria-label="Cerrar">×</button></div>
+      <div class="dialog-header"><div><p class="eyebrow">DEMO QUOTE</p><h2 id="quote-title">Your summary</h2></div><button class="close-button" data-close="quote-dialog" type="button" aria-label="Close">×</button></div>
       <div id="quote-summary" class="quote-summary"></div>
-      <button id="download-quote" class="primary-button full-button" type="button">Descargar resumen</button>
-      <p class="demo-disclaimer">Este archivo es una estimación de demostración, no una cotización comercial.</p>
+      <button id="download-quote" class="primary-button full-button" type="button">Download summary</button>
+      <p class="demo-disclaimer">This file is a demo estimate, not a commercial quote.</p>
     </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>

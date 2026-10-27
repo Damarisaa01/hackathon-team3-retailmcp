@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 TOOL_NAMES = ["get_dataset_overview", "get_data_quality_report", "list_stores", "search_products", "get_product",
-              "get_calendar", "sales_summary", "inventory_health", "reorder_recommendations", "supplier_performance",
+              "get_calendar", "sales_summary", "sales_comparison", "inventory_health", "reorder_recommendations", "supplier_performance",
               "store_kpis", "promotion_performance", "weather_impact"]
 
 
@@ -41,7 +41,7 @@ class GlazedRetailConfig(FunctionGroupBaseConfig, name="glazed_retail"):
                                description="Tools to expose (default: all). Use `exclude` instead to remove some.")
 
     data_dir: str | None = Field(default=None,
-                                 description="Directory with the dataset CSVs. Defaults to <repo>/data or $GLAZED_DATA_DIR.")
+                                 description="Data directory. Reads glazed.db when present, otherwise CSVs. Defaults to <repo>/data or $GLAZED_DATA_DIR.")
 
 
 # Shared parameter types -------------------------------------------------------
@@ -54,6 +54,7 @@ Department = Annotated[str | None, Field(description="Product department: Bevera
 Category = Annotated[str | None, Field(description="Product category, e.g. 'Coffee & Tea', 'Bakery', 'Sandwiches', 'Specialty Beverage'.")]
 Sku = Annotated[str | None, Field(description="SKU like 'SKU-100003'. Comma-separate for several.")]
 Limit = Annotated[int, Field(ge=1, le=an.MAX_LIMIT, description="Max rows to return.")]
+Offset = Annotated[int, Field(ge=0, description="Number of matching rows to skip for pagination.")]
 Asc = Annotated[bool, Field(description="Sort ascending instead of descending.")]
 
 
@@ -97,8 +98,8 @@ def _build_tools(ds) -> list[tuple[str, Callable, str]]:
                               status: Annotated[str | None, Field(description="Active, Discontinued, Inactive or Seasonal-Off.")] = None,
                               inventory_tracked: Annotated[bool | None, Field(description="Only SKUs with inventory/PO data.")] = None,
                               supplier_id: Annotated[str | None, Field(description="e.g. 'SUP01'.")] = None,
-                              limit: Limit = 25) -> dict:
-        return await run(an.search_products, query, department, category, status, inventory_tracked, supplier_id, limit)
+                              limit: Limit = 25, offset: Offset = 0) -> dict:
+        return await run(an.search_products, query, department, category, status, inventory_tracked, supplier_id, limit, offset)
 
     async def get_product(sku_or_barcode: Annotated[str, Field(description="A SKU (e.g. 'SKU-100003') or a barcode.")]) -> dict:
         return await run(an.get_product, sku_or_barcode)
@@ -120,6 +121,14 @@ def _build_tools(ds) -> list[tuple[str, Callable, str]]:
             ascending: Asc = False, limit: Limit = 25) -> dict:
         return await run(an.sales_summary, group_by, date_from, date_to, store_id, site_id, region, department, category,
                          sku, sort_by, ascending, limit)
+
+    async def sales_comparison(date_from: DateFrom = None, date_to: DateTo = None, store_id: StoreId = None,
+                               category: Category = None, limit: Limit = 20,
+                               forecast_days: Annotated[int, Field(ge=1, le=90, description="Projection horizon in days.")] = 30,
+                               sort_by: Annotated[Literal["net_sales", "units_sold"],
+                                                  Field(description="Rank products by net sales or units sold.")] = "net_sales",
+                               sku: Annotated[str | None, Field(description="Up to 3 comma-separated product SKUs to compare exclusively.")] = None) -> dict:
+        return await run(an.sales_comparison, date_from, date_to, store_id, category, limit, forecast_days, sort_by, sku)
 
     async def inventory_health(
             group_by: Annotated[Literal["none", "store", "site", "region", "department", "category", "sku", "month",
@@ -187,6 +196,9 @@ def _build_tools(ds) -> list[tuple[str, Callable, str]]:
         ("sales_summary", sales_summary,
          "Aggregate sales (units, gross, discount, net sales) by time, store, site, region, product dimension, "
          "weekday, holiday or promotion, with filters. Use for top/bottom sellers, trends and comparisons."),
+        ("sales_comparison", sales_comparison,
+         "Global sales comparison for a date range: units, net sales, changes vs the previous equal-length period, "
+         "realized vs current list prices, monthly trend, top products and a clearly labeled simple projection."),
         ("inventory_health", inventory_health,
          "Waste and availability metrics for inventory-tracked SKUs: expired/damaged units, waste cost, stockout "
          "hours and days, by any dimension. Use to find where perishables are wasted or products run out."),

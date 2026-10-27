@@ -7,6 +7,7 @@ raises ``ValueError`` with a message meant for the LLM caller on bad input.
 from __future__ import annotations
 
 import math
+import unicodedata
 from typing import Any
 
 import numpy as np
@@ -17,7 +18,7 @@ from .data import norm_sku
 from .data import norm_store
 from .data import parse_dates
 
-MAX_LIMIT = 400
+MAX_LIMIT = 500
 
 # --------------------------------------------------------------------------- #
 # Helpers
@@ -198,7 +199,7 @@ def data_quality_report(ds: Dataset, table: str | None = None) -> dict:
             return {"table": t, "issues": [], "note": f"No issues logged for '{t}'. Tables with issues: {sorted(q)}"}
         return {"table": t, "issues": q[t]}
     return {"issues_by_table": q, "total_tables_with_issues": len(q),
-            "note": "Raw CSVs are untouched; these are the cleaning actions applied to the in-memory copy."}
+            "note": "Source files are untouched; these are the cleaning actions applied to the in-memory copy."}
 
 
 # --------------------------------------------------------------------------- #
@@ -225,12 +226,35 @@ def list_stores(ds: Dataset, site_id=None, region=None, format=None, status=None
 
 
 def search_products(ds: Dataset, query=None, department=None, category=None, status=None, inventory_tracked=None,
-                    supplier_id=None, limit=25) -> dict:
+                    supplier_id=None, limit=25, offset=0) -> dict:
     p = ds.products
     if query:
         q = query.strip()
-        m = p["product_name"].str.contains(q, case=False, regex=False, na=False) | p["sku"].str.contains(
-            q, case=False, regex=False, na=False)
+        def search_key(value: object) -> str:
+            normalized = unicodedata.normalize("NFKD", str(value)).casefold()
+            return "".join(character for character in normalized if not unicodedata.combining(character))
+
+        synonyms = {
+            "cafe": "coffee",
+            "cafes": "coffee",
+            "dona": "donut",
+            "donas": "donut",
+            "donuts": "donut",
+            "sandwiches": "sandwich",
+        }
+        q = search_key(query.strip())
+        query_variants = {q}
+        words = q.split()
+        for index, word in enumerate(words):
+            if word in synonyms:
+                translated = words.copy()
+                translated[index] = synonyms[word]
+                query_variants.add(" ".join(translated))
+        names = p["product_name"].map(search_key)
+        skus = p["sku"].map(search_key)
+        m = pd.Series(False, index=p.index)
+        for term in query_variants:
+            m |= names.str.contains(term, regex=False, na=False) | skus.str.contains(term, regex=False, na=False)
         p = p[m.fillna(False)]
     for col, val in (("department", department), ("category", category), ("status", status),
                      ("supplier_id", supplier_id)):
@@ -241,8 +265,10 @@ def search_products(ds: Dataset, query=None, department=None, category=None, sta
         p = p[p["inventory_tracked"] == int(bool(inventory_tracked))]
     cols = ["sku", "product_name", "department", "category", "subcategory", "supplier_id", "unit_cost",
             "list_price_base", "status", "inventory_tracked", "is_perishable", "shelf_life_days"]
-    return {"total_matching": len(p), "returned": min(len(p), _limit(limit)),
-            "products": records(p.sort_values("sku").head(_limit(limit))[cols])}
+    start = max(0, int(offset))
+    page = p.sort_values("sku").iloc[start:start + _limit(limit)]
+    return {"total_matching": len(p), "returned": len(page), "offset": start,
+            "products": records(page[cols])}
 
 
 def get_product(ds: Dataset, sku_or_barcode: str) -> dict:
@@ -338,6 +364,104 @@ def sales_summary(ds: Dataset, group_by="none", date_from=None, date_to=None, st
         "totals": records(total.round(4))[0], "rows": records(rows),
         "notes": ["net_sales = gross_sales - discount. Rows with missing/negative units or net_sales were removed "
                   "in cleaning. Time groups are in chronological order; raise `limit` to see all periods."],
+    }
+
+
+def sales_comparison(ds: Dataset, date_from=None, date_to=None, store_id=None, category=None, limit=20,
+                     forecast_days=30, sort_by="net_sales", sku=None) -> dict:
+    if len(_split(sku)) > 3:
+        raise ValueError("Select no more than 3 product SKUs for comparison.")
+    sales = sales_frame(ds)
+    latest_date = sales["date"].max()
+    end = _one_date(date_to, "date_to") or latest_date
+    start = _one_date(date_from, "date_from") or end - pd.Timedelta(days=29)
+    if start > end:
+        raise ValueError("date_from must be on or before date_to")
+
+    period_days = (end - start).days + 1
+    previous_end = start - pd.Timedelta(days=1)
+    previous_start = previous_end - pd.Timedelta(days=period_days - 1)
+    current = apply_filters(sales, date_from=start, date_to=end, store_id=store_id, category=category, sku=sku)
+    previous = apply_filters(sales, date_from=previous_start, date_to=previous_end,
+                             store_id=store_id, category=category, sku=sku)
+
+    def totals(frame: pd.DataFrame) -> dict:
+        units = int(frame["units_sold"].sum())
+        net_sales = float(frame["net_sales"].sum())
+        return {"units_sold": units, "net_sales": round(net_sales, 2),
+                "average_net_price": round(net_sales / units, 2) if units else None}
+
+    current_totals = totals(current)
+    previous_totals = totals(previous)
+
+    def change(current_value: float, previous_value: float) -> float | None:
+        return round((current_value / previous_value - 1) * 100, 1) if previous_value else None
+
+    recent_start = max(start, end - pd.Timedelta(days=27))
+    recent = current[current["date"] >= recent_start]
+    recent_days = max(1, (end - recent_start).days + 1)
+    projected_units = float(recent["units_sold"].sum() / recent_days * forecast_days)
+    projected_net_sales = float(recent["net_sales"].sum() / recent_days * forecast_days)
+    recent_by_product = recent.groupby("sku").agg(
+        recent_units=("units_sold", "sum"), recent_net_sales=("net_sales", "sum")
+    )
+
+    grouped = current.groupby(["sku", "product_name", "category"], dropna=False).agg(
+        units_sold=("units_sold", "sum"), net_sales=("net_sales", "sum")
+    ).reset_index()
+    grouped["average_net_price"] = np.where(
+        grouped["units_sold"] > 0, grouped["net_sales"] / grouped["units_sold"], np.nan
+    )
+    grouped = grouped.join(recent_by_product, on="sku")
+    grouped[["recent_units", "recent_net_sales"]] = grouped[["recent_units", "recent_net_sales"]].fillna(0)
+    grouped["projected_units"] = (grouped["recent_units"] / recent_days * forecast_days).round(1)
+    grouped["projected_net_sales"] = (grouped["recent_net_sales"] / recent_days * forecast_days).round(2)
+
+    valid_prices = ds.prices[
+        (ds.prices["effective_from"].isna() | (ds.prices["effective_from"] <= end))
+        & (ds.prices["effective_to"].isna() | (ds.prices["effective_to"] >= end))
+    ]
+    if store_id:
+        store_mask = _id_mask(valid_prices["store_id"], store_id, "store")
+        if store_mask is not None:
+            valid_prices = valid_prices[store_mask]
+    price_by_sku = valid_prices.groupby("sku")["unit_price"].mean()
+    grouped["current_list_price"] = grouped["sku"].map(price_by_sku)
+    sort_by = _check_choice(sort_by, ["net_sales", "units_sold"], "sort_by")
+    grouped = grouped.sort_values([sort_by, "net_sales", "units_sold"], ascending=[False, False, False]).head(
+        _limit(limit)
+    )
+
+    monthly = current.assign(month=current["date"].dt.to_period("M").dt.start_time).groupby("month").agg(
+        units_sold=("units_sold", "sum"), net_sales=("net_sales", "sum")
+    ).reset_index()
+
+    return {
+        "filters": _filters_echo(date_from=date_from, date_to=date_to, store_id=store_id, category=category, sku=sku),
+        "period": {"from": _jsonable(start), "to": _jsonable(end), "days": period_days},
+        "previous_period": {"from": _jsonable(previous_start), "to": _jsonable(previous_end)},
+        "summary": {
+            **current_totals,
+            "previous_units_sold": previous_totals["units_sold"],
+            "previous_net_sales": previous_totals["net_sales"],
+            "units_change_pct": change(current_totals["units_sold"], previous_totals["units_sold"]),
+            "net_sales_change_pct": change(current_totals["net_sales"], previous_totals["net_sales"]),
+        },
+        "projection": {
+            "days": forecast_days,
+            "through": _jsonable(end + pd.Timedelta(days=forecast_days)),
+            "units_sold": round(projected_units, 1),
+            "net_sales": round(projected_net_sales, 2),
+            "method": f"Promedio diario de los últimos {recent_days} días seleccionados, extrapolado a {forecast_days} días.",
+        },
+        "monthly_sales": records(monthly),
+        "top_products": records(grouped[["sku", "product_name", "category", "units_sold", "net_sales",
+                                          "average_net_price", "current_list_price", "projected_units",
+                                          "projected_net_sales"]].round(2)),
+        "notes": [
+            "El precio promedio cobrado es net_sales / units_sold; current_list_price es el promedio de precios vigentes en la fecha final (por tienda si se filtra una tienda).",
+            "La proyección es una extrapolación simple, no un pronóstico estadístico ni una garantía de ventas.",
+        ],
     }
 
 

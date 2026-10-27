@@ -1,9 +1,8 @@
-"""Loading and cleaning of the Glazed Co. hackathon dataset.
+"""Load and clean the Glazed Co. dataset from SQLite, with a CSV fallback.
 
-The CSVs ship with intentional quality problems (see data/README.md). Every
-table is cleaned once, in memory, and cached. The raw CSVs are never modified.
-What was fixed or discarded is recorded in ``Dataset.quality`` so tools (and the
-LLM calling them) can state their caveats.
+The SQLite database is opened read-only when present. Tables are cleaned once
+in memory and cached; the source database and CSV files are never modified.
+Cleaning actions are recorded in ``Dataset.quality`` for MCP tool caveats.
 """
 
 from __future__ import annotations
@@ -11,6 +10,7 @@ from __future__ import annotations
 import logging
 import os
 import re
+import sqlite3
 from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
@@ -105,6 +105,11 @@ class _Log:
 
 
 def _read(d: Path, name: str, **kw) -> pd.DataFrame:
+    database = d / "glazed.db"
+    if database.is_file():
+        uri = f"{database.resolve().as_uri()}?mode=ro"
+        with sqlite3.connect(uri, uri=True) as connection:
+            return pd.read_sql_query(f'SELECT * FROM "{name}"', connection, dtype=kw.get("dtype"))
     return pd.read_csv(d / f"{name}.csv", low_memory=False, **kw)
 
 
@@ -124,9 +129,17 @@ def _filter(df: pd.DataFrame, mask: pd.Series, log: _Log, table: str, msg: str) 
 
 def load_dataset(data_dir: str | Path | None = None) -> Dataset:
     d = Path(data_dir).expanduser() if data_dir else default_data_dir()
-    if not (d / "sales_daily.csv").exists():
-        raise FileNotFoundError(f"Dataset not found in {d} (set ${DATA_DIR_ENV} or the data_dir option)")
+    database = d / "glazed.db"
+    if not database.exists() and not (d / "sales_daily.csv").exists():
+        raise FileNotFoundError(f"Dataset not found in {d} (expected glazed.db or sales_daily.csv)")
     log = _Log()
+    if database.is_file():
+        try:
+            quality = _read(d, "data_quality_log")
+            for row in quality.itertuples(index=False):
+                log.add(row.table_name, row.rows_affected, f"{row.issue}: {row.action}")
+        except (sqlite3.Error, pd.errors.DatabaseError):
+            logger.info("No data_quality_log table found in %s", database)
 
     # ---- dimensions ------------------------------------------------------- #
     sites = _read(d, "sites")

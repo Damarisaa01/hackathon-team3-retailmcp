@@ -21,6 +21,8 @@ uv run nat mcp client tool call retail__sales_summary --url http://localhost:990
 
 Point an agent at it with `mcp_client.yaml` (set the tool names under `include` to the ones below).
 Data location: `<repo>/data`, overridable with `$GLAZED_DATA_DIR` or `data_dir:` in `config.yml`.
+The MCP reads `data/glazed.db` in read-only mode when present; it falls back to CSV files if the database is absent.
+The dataset is loaded and cached at MCP startup, so restart the MCP after changing SQLite data.
 
 ## Web demo
 
@@ -54,6 +56,7 @@ search/NV-CLIP and the NVIDIA shopping agent are not connected in this demo.
 | `search_products` / `get_product` | Product master search; full detail by SKU or barcode (supplier, prices, sales) |
 | `get_calendar` | Holidays, weekends, school breaks |
 | `sales_summary` | Units / gross / discount / net by time, store, site, region, product dimension, weekday, holiday, promo |
+| `sales_comparison` | Period totals, changes vs. prior period, realized/current prices, monthly trend, top products and an estimated projection |
 | `inventory_health` | Waste (expired/damaged, cost) and stockouts by any dimension |
 | `reorder_recommendations` | Suggested order quantities per store (demand, lead time, case size, shelf life) |
 | `supplier_performance` | Fill rate / on-time vs contract from purchase orders |
@@ -63,8 +66,9 @@ search/NV-CLIP and the NVIDIA shopping agent are not connected in this demo.
 
 ## Data cleaning
 
-The raw CSVs are never modified. `glazed_retail_mcp/data.py` cleans an in-memory copy once at startup
-(~6 s) and records every action; `get_data_quality_report` returns that log. Main fixes: SKU/store ID
+The migration script cleans CSV data into `data/glazed.db`. The MCP opens that database read-only and cleans
+an in-memory copy once at startup; if the database is absent, it loads the CSVs directly. The original source
+files are never modified. `get_data_quality_report` returns the recorded cleaning actions. Main fixes: SKU/store ID
 formats (`sku100237`, `S0019`, `s018 `), three date formats, duplicate rows, `-999` weather sentinels,
 `?`/`TBD` prices, USD spelling variants, negative quantities, conflicting duplicate SKUs/POs.
 Rows with negative or missing units are dropped, not repaired. Review the rules there if you disagree.
